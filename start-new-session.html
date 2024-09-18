@@ -1,0 +1,197 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+ 		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="Begin your fitness journey with our easy start session. Register or verify your details to access tailored workout plans.">
+	 	<title>Start Session</title>
+	 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+		<link rel="stylesheet" href="shared_background.css">
+		<style>
+			#form-link, #verification, #options-upon-verification{
+				display: none;
+			}
+
+			#redirect-link, .choices{
+	            text-decoration: none;
+            	color: #900; 			
+			}
+
+			#username, #email{
+				border-radius: 8px;
+				border: 1px solid darkgray;
+			}
+
+			#submit-form-img{
+				background-position: center;
+				width: 80vw;
+				height: 50vh;				
+
+			}
+		</style>
+	 </head>
+	 <body>
+	 	<div id="main">
+	 		<div id="lookup">
+				<div class="row">
+					<div class="col-12">
+						<ul id="navbar">
+							<li><a href="landing_home_page.html"> Home </a></li>
+							<li><a href="view_quotes_page.html">View Quotes</a></li>
+						</ul>
+					</div>
+				</div>		
+			</div> <!-- lookup -->
+
+			<div id="register" class="text-center">
+				<div class="mt-5 text-center">
+					<img id="submit-form-img" src="img/form-submit.jpeg" alt="holding dumbbells">
+				</div>
+				<form id="yes-no" onsubmit="return validateChoice()">
+					<h3> Are you a registered user?</h3>
+					<input type="radio" id="yes" name="choice" value="yes">
+					<label for="yes">YES</label>
+					<input type="radio" id="no" name="choice" value="no">
+					<label for="no">NO</label>
+
+					<div class="mt-3 pb-3">
+						<input type="submit" id="submit-input" value="submit" class="btn btn-outline-secondary">					
+					</div>
+
+
+				</form> <!-- yes-no -->
+
+				<h4 id="form-link" class="mt-3 pb-5"> Please visit <a id="redirect-link" href="workout-submission-form.php"> this link </a>to get yourself started</h4>
+
+				<div id="verification" class="text-center mt-5 mb-3">
+					<form id="name-email" onsubmit="return validateForm()" method="POST" action="new-user-setup.php">
+						<h4>Please enter your username and email to verify</h4>
+
+						<div class="d-flex justify-content-center">
+							<div>
+								<label for="username">Username:</label><br>
+								<label for="email">Email:</label>
+							</div>
+						
+							<div>
+								<input type="text" id="username" name="username"><br>
+								<input type="email" id="email" name="email"><br>						
+							</div>
+
+							<div>
+								<small id="username-error" class="text-danger" ></small><br class="mb-2">
+								<small id="email-error" class="text-danger mt-5"> </small>
+							</div>
+						</div>
+
+						<div class="mt-3 pb-3">
+							<input type="submit" id="verify-input" class="btn btn-outline-secondary" name="input">
+						</div>
+						
+
+
+					</form> <!-- name-email -->
+				</div> <!-- verification -->
+
+				<div id="options-upon-verification" class="pb-3">
+					<h4>Verification was Successful</h4>
+					<h4>To view your current plan, click <a class="choices" href="view_workout_plan.php">here</a> here</h4>
+					<h4>To create a new plan, click <a class="choices" href="user-submission-form.php">here</a> </h4>
+
+
+				</div> <!-- options upon verification -->
+			</div> <!-- register -->
+
+
+	 	</div> <!-- main -->
+		<script src="validateEmail.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+	 	<script>
+
+
+	 		function validateChoice() {
+	 			event.preventDefault()
+
+	 			const decision = document.querySelector(`input[name="choice"]:checked`).value.trim();
+
+	 			console.log("your choice was " + decision)
+
+	 			if (decision === "no"){
+	 				console.log("good choice")
+
+	 				document.getElementById("form-link").style.display = "block";
+	 			}else{
+	 				document.getElementById("verification").style.display = "block";
+
+	 			}
+
+
+	 		}
+
+	 			function validateForm() {
+		 			 event.preventDefault(); // Prevent form from refreshing the page
+
+		            let isValid = true;
+		            const username = document.getElementById("username").value.trim();
+		            const email = document.getElementById("email").value.trim();
+
+		            console.log(username + " and " + email);
+
+		            // Validation checks
+		            if (username.length === 0) {
+		                isValid = false;
+		                document.querySelector("#username-error").innerHTML = "Username cannot be empty";
+		            } else if (username.length === 1) {
+		                isValid = false;
+		                document.querySelector("#username-error").innerHTML = "Please enter a valid username";
+		            } else if (/^[A-Z][a-z]+(?:\s[A-Z][a-z]+)*$/.test(username) == false) {
+		                isValid = false;
+		                document.querySelector("#username-error").innerHTML = "Please enter a valid full name";
+		            } else {
+		                document.querySelector("#username-error").innerHTML = "";
+		            }
+
+		            if (email.length === 0) {
+		                isValid = false;
+		                document.querySelector("#email-error").innerHTML = "Email cannot be empty";
+		            } else if (!isValidEmail(email)) {
+		                isValid = false;
+		                document.querySelector("#email-error").innerHTML = "Invalid email";
+		            } else {
+		                document.querySelector("#email-error").innerHTML = "";
+		            }
+
+		            if (isValid){
+
+		            	const data = new FormData(document.getElementById("name-email"))
+
+		            	$.ajax({
+		            		url: "new-user-setup.php",
+		            		type: "POST",
+		            		data: data,
+		            		processData: false,
+		            		contentType: false,
+		            		success:function(data){
+		            			console.log(data)
+		            			document.getElementById("options-upon-verification").style.display = "block"
+		            		},
+		            		error: function(xhr, status, error){
+		            			console.log("Error: unable to process data")
+		            		}
+
+		            	})
+
+
+		            }
+
+		            return isValid
+
+		 	}
+
+
+
+	 	</script>
+
+	 </body>
+ </html>
